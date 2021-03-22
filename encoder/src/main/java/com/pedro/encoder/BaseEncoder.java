@@ -48,25 +48,19 @@ public abstract class BaseEncoder implements EncoderCallback {
     handlerThread = new HandlerThread(TAG);
     handlerThread.start();
     Handler handler = new Handler(handlerThread.getLooper());
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      createAsyncCallback();
-      codec.setCallback(callback, handler);
-      codec.start();
-    } else {
-      codec.start();
-      handler.post(new Runnable() {
-        @Override
-        public void run() {
-          while (running) {
-            try {
-              getDataFromEncoder();
-            } catch (IllegalStateException e) {
-              Log.i(TAG, "Encoding error", e);
-            }
+    codec.start();
+    handler.post(new Runnable() {
+      @Override
+      public void run() {
+        while (running) {
+          try {
+            getDataFromEncoder();
+          } catch (IllegalStateException e) {
+            Log.i(TAG, "Encoding error", e);
           }
         }
-      });
-    }
+      }
+    });
     running = true;
   }
 
